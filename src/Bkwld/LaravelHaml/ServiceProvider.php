@@ -24,10 +24,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	public function register() {
 
 		// Version specific registering
-		if ($this->version() == 5) $this->registerLaravel5();
+		if ($this->version() != 4) $this->registerLaravel5();
 
 		// Determine the cache dir
-		$cache_dir = storage_path($this->version() == 5 ? '/framework/views' : '/views');
+		$cache_dir = storage_path($this->version() != 4 ? '/framework/views' : '/views');
 
 		// Bind the package-configred MtHaml instance
 		$this->app->singleton('laravel-haml.mthaml', function($app) {
@@ -69,7 +69,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		switch($this->version()) {
 			case 4: $this->bootLaravel4(); break;
 			case 5: $this->bootLaravel5(); break;
-			default: throw new Exception('Unsupported Laravel version');
+			default: $this->bootLaravel5(); break;
+			// default: throw new Exception('Unsupported Laravel version');
 		}
 
 		// Register compilers
@@ -144,7 +145,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 * @return array 
 	 */
 	public function getConfig() {
-		$key = $this->version() == 5 ? 'laravel-haml' : 'laravel-haml::config';
+		$key = $this->version() != 4 ? 'laravel-haml' : 'laravel-haml::config';
 		return $this->app->make('config')->get($key);
 	}
 
